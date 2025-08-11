@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<!-- PRJ.ARTE - Projeto de apresentação de conteúdos sobre "Expressionismo Abstrato", a partir de uma estrutura de dados, destinado à avaliação de competências, no ano letivo de 2022-2023, do aluno n.º 25269, João Campos. -->
+
+
+<html lang="pt">
+    <head>
+        <meta charset="utf-8" />
+        <title>ARTE - 25269</title>
+        <link href="arte.css" rel="stylesheet" type="text/css" />
+        <script src="arte_DADOS.js"></script>
+        <script src="arte_PARS.js"></script>
+        <script src="arte_FUNCS.js"></script>
+    </head>
+
+    <body onload="inic()">
+   
+    <div id="base">
+        <div id="subBase">
+            <div id="divTexto"></div>
+            <div id="divPintores"></div>
+        </div>  
+    </div>
+ 
+        <div id="vistaPintores">
+			    <div id="PintorDados">     
+                    <button class="botNormal" onclick="showIntrod()">introdução</button>
+                    <button id="botAnt" onclick="avanca(-1)">Pintor Anterior</button>
+                    <button id="botSeg" onclick="avanca(1)">Pintor Seguinte</button>
+                    <select id="ddPintores" onchange="escolhePintor()"></select>
+                </div>
+                <div id="divPinturas"></div>
+                <div id="PintorTexto">
+                    <img id="fotoPintor" width="200px" />
+                    <h2 id="refPintor"></h2>
+                    <div id="TextoPintor"></div>
+                </div>            
+        </div>   
+
+        <div id="VistaObra">    
+            <div id="subBaseObras">
+                    <button class="botNormal" onclick="showIntrod()">introdução</button>
+                    <button id="botAnt" onclick="avancar(-1)">Obra Anterior</button>
+                    <button id="botSeg" onclick="avancar(1)">Obra Seguinte</button>
+                <select id="ddObra" onchange="escolheObra()"></select>
+                <img id="fotoObra" width="100%"/>
+                <div id="ObraTexto"></div>
+            </div>
+        </div>
+           
+    </body>
+</html>

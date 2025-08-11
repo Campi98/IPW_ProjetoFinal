@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<!--PUZZLE - Aplicação interativa de manipulação de um puzzle de 5x5 peças, destinado à avaliação de competências, no ano letivo de 2022-2023, do aluno n.º 25269, João Campos.
+
+!!!!! as imagens estão numa pasta chamada ../ImagensPuzzle !!!!!
+
+-->
+<html lang="pt">
+    <head>
+        <meta charset="utf-8" />
+        <title>PUZZLE - 25269</title>
+        <style>
+            body {
+                background-color: #000000;
+            }
+            h1 {
+				font: bold 22px arial;
+				color: #f0e040;
+				margin-top: 0px;
+			}
+            .CaixaImagens {
+                width: 99px;
+                height: 99px;
+                float: left;
+                margin: 0.5px;
+                border: 1px solid #ffffff;
+                cursor: pointer;
+            }
+
+            #base {
+                width: 522px;
+                margin: 0px auto 0px auto;
+                border: 2px solid #ffffff;
+                background-color: #1f405f;
+                padding: 15px;
+                text-align: center;
+            }
+            #butt {
+                font: bold 17px arial;
+				color: #800000;
+				padding: 3px 7px;
+				margin: 0px 2px 15px 0px;
+				cursor: pointer;
+            }
+            #cores {
+                background-color: #1f405f;
+                padding: 1px;
+                margin-top: 1px;
+                overflow: hidden;
+                margin-top: 15px;
+            }
+        </style>
+        <script>
+            // ========== CONSTANTES ==========
+            var TOTAL_PIECES = 24;
+            var TOTAL_POSITIONS = 25;
+            var GRID_SIZE = 5;
+            var EMPTY_COLOR = "#000000";
+            var IMAGE_PATH = "../ImagensPuzzle/";
+            
+            // ========== ESTADOS DO JOGO ==========
+            var GAME_STATES = {
+                FINISHED: 1,
+                NORMAL: 2,
+                EASY: 3
+            };
+            
+            // ========== VARIÁVEIS GLOBAIS ==========
+            var refCores;
+            var gameFinished = false; // controla se o jogo está finalizado
+            
+            // ========== INICIALIZAÇÃO ==========
+            function inic() {
+                adqInterf();
+                criaCaixasCores(TOTAL_POSITIONS);
+                randImages();
+                document.querySelector("h1").innerText = titulo(GAME_STATES.NORMAL);
+            }
+
+            function titulo(n) {
+                var tit = "Puzzle - Taj Mahal - ";
+                switch (n) {
+                    case GAME_STATES.FINISHED: tit += "Finalizado"; break;
+                    case GAME_STATES.NORMAL: tit += "Em Jogo Normal"; break;
+                    case GAME_STATES.EASY: tit += "Em Jogo Facilitado"; break;
+                }
+                return tit;
+            }
+
+            // ========== CONFIGURAÇÃO DO INTERFACE ==========
+            function adqInterf() {
+                refCores = document.getElementById("cores");
+            }
+
+            // ========== FUNÇÕES UTILITÁRIAS ==========
+            function setImageEmpty(imgElement) {
+                imgElement.src = "";
+                imgElement.style.backgroundColor = EMPTY_COLOR;
+            }
+
+            function setImagePiece(imgElement, pieceNumber) {
+                imgElement.src = IMAGE_PATH + "p" + ("0" + pieceNumber).slice(-2) + ".jpg";
+                imgElement.style.backgroundColor = "";
+            }
+
+            function getImageElement(position) {
+                var caixas = document.getElementsByClassName("CaixaImagens");
+                return caixas[position].getElementsByTagName("img")[0];
+            }
+
+            // ========== CRIAÇÃO DO INTERFACE ==========
+            function criaCaixasCores(nCaixas) {
+                var codHTML = "";
+                for (var i = 0; i < nCaixas; i++) {
+                    var isEmpty = (i === TOTAL_PIECES);
+                    var imageSrc = isEmpty ? '' : IMAGE_PATH + 'p' + ('0' + (i + 1)).slice(-2) + '.jpg';
+                    var bgStyle = isEmpty ? 'style="background-color: ' + EMPTY_COLOR + ';"' : '';
+                    
+                    codHTML += '<div class="CaixaImagens" onclick="movePiece(' + i + ')">' +
+                               '<img src="' + imageSrc + '" ' + bgStyle + '>' +
+                               '</div>';
+                }
+                refCores.innerHTML = codHTML;
+            }
+            
+            // ========== FUNÇÕES PRINCIPAIS DO JOGO ==========
+            function ez() {
+                gameFinished = false; // permite movimentos novamente
+                
+                // Limpa todas as posições
+                for (var k = 0; k < TOTAL_POSITIONS; k++) {
+                    setImageEmpty(getImageElement(k));
+                }
+
+                // Coloca as peças em ordem de p01 a p23 nas posições 0 a 22
+                for (var i = 0; i < 23; i++) {
+                    setImagePiece(getImageElement(i), i + 1);
+                }
+                
+                // Posição 23: espaço vazio
+                setImageEmpty(getImageElement(23));
+                
+                // Posição 24: peça p24
+                setImagePiece(getImageElement(24), 24);
+                
+                document.querySelector("h1").innerText = titulo(GAME_STATES.EASY);
+                checkPuzzleStatus();
+            }
+
+                
+            function show() {
+                // Força a finalização do puzzle independentemente do estado atual
+                document.querySelector("h1").innerText = titulo(GAME_STATES.FINISHED);
+                gameFinished = true;
+                
+                // Coloca todas as peças na ordem correta
+                for (var i = 0; i < TOTAL_PIECES; i++) {
+                    setImagePiece(getImageElement(i), i + 1);
+                }
+                
+                // Mostra a peça final na última posição
+                setImagePiece(getImageElement(24), 25);
+            }
+
+            function randImages() {
+                gameFinished = false; // permite movimentos novamente
+                
+                // Gera array de números de 1 a 24
+                var pieces = [];
+                for (var i = 1; i <= TOTAL_PIECES; i++) {
+                    pieces.push(i);
+                }
+                
+                // Limpa todas as posições
+                for (var k = 0; k < TOTAL_POSITIONS; k++) {
+                    setImageEmpty(getImageElement(k));
+                }
+                
+                // Distribui as peças aleatoriamente nas primeiras 24 posições
+                for (var k = 0; k < TOTAL_PIECES; k++) {
+                    var randomIndex = Math.floor(Math.random() * pieces.length);
+                    var pieceNumber = pieces.splice(randomIndex, 1)[0];
+                    setImagePiece(getImageElement(k), pieceNumber);
+                }
+                
+                checkPuzzleStatus();
+            }
+
+            // ========== FUNÇÕES DE LÓGICA DO PUZZLE ==========
+            // Encontra a posição do espaço vazio
+            function findEmptySpace() {
+                var caixas = document.getElementsByClassName("CaixaImagens");
+                for (var i = 0; i < caixas.length; i++) {
+                    var imgSrc = caixas[i].getElementsByTagName("img")[0].src;
+                    var bgColor = caixas[i].getElementsByTagName("img")[0].style.backgroundColor;
+                    // Considera vazio se não tem src ou se tem background preto
+                    if (imgSrc === "" || bgColor === "rgb(0, 0, 0)" || bgColor === EMPTY_COLOR || !imgSrc.includes(".jpg")) {
+                        return i;
+                    }
+                }
+                return TOTAL_PIECES; // default para a última posição
+            }
+
+            // Verifica se duas posições são adjacentes no grid 5x5
+            function areAdjacent(pos1, pos2) {
+                var row1 = Math.floor(pos1 / GRID_SIZE);
+                var col1 = pos1 % GRID_SIZE;
+                var row2 = Math.floor(pos2 / GRID_SIZE);
+                var col2 = pos2 % GRID_SIZE;
+                
+                var horizontalAdjacent = (Math.abs(col1 - col2) === 1 && row1 === row2);
+                var verticalAdjacent = (Math.abs(row1 - row2) === 1 && col1 === col2);
+                
+                return horizontalAdjacent || verticalAdjacent;
+            }
+
+            // Move uma peça se ela estiver adjacente ao espaço vazio
+            function movePiece(clickedIndex) {
+                // Não permite movimento se o jogo estiver finalizado
+                if (gameFinished) {
+                    return;
+                }
+                
+                var emptyIndex = findEmptySpace();
+                
+                if (areAdjacent(clickedIndex, emptyIndex)) {
+                    var caixas = document.getElementsByClassName("CaixaImagens");
+                    var clickedImg = caixas[clickedIndex].getElementsByTagName("img")[0];
+                    var emptyImg = caixas[emptyIndex].getElementsByTagName("img")[0];
+                    
+                    // Guarda os valores da peça clicada
+                    var clickedSrc = clickedImg.src;
+                    var clickedBgColor = clickedImg.style.backgroundColor;
+                    
+                    // Move a peça clicada para o espaço vazio
+                    emptyImg.src = clickedSrc;
+                    emptyImg.style.backgroundColor = clickedBgColor;
+                    
+                    // Torna a posição clicada vazia
+                    setImageEmpty(clickedImg);
+                    
+                    // Verifica se o puzzle foi completado
+                    checkPuzzleStatus();
+                } else {
+                    // Feedback visual para movimento inválido
+                    var caixas = document.getElementsByClassName("CaixaImagens");
+                    var originalBorder = caixas[clickedIndex].style.border;
+                    caixas[clickedIndex].style.border = "3px solid red";
+                    setTimeout(function() {
+                        caixas[clickedIndex].style.border = originalBorder;
+                    }, 200);
+                }
+            }
+
+            // Verifica se o puzzle está na ordem correta (exceto o espaço vazio)
+            function isPuzzleComplete() {
+                var caixas = document.getElementsByClassName("CaixaImagens");
+                var emptyIndex = findEmptySpace();
+                
+                for (var i = 0; i < TOTAL_POSITIONS; i++) {
+                    if (i === emptyIndex) continue; // ignora o espaço vazio
+                    
+                    var imgSrc = caixas[i].getElementsByTagName("img")[0].src;
+                    var expectedNumber = ("0" + (i + 1)).slice(-2);
+                    
+                    if (!imgSrc.includes("p" + expectedNumber + ".jpg")) {
+                        return false;
+                    }
+                }
+                
+                // O puzzle está completo se o espaço vazio estiver na posição 24
+                return emptyIndex === TOTAL_PIECES;
+            }
+
+            // Verifica o estado do puzzle e atualiza o título e a peça final
+            function checkPuzzleStatus() {
+                if (isPuzzleComplete()) {
+                    document.querySelector("h1").innerText = titulo(GAME_STATES.FINISHED);
+                    gameFinished = true; // marca o jogo como finalizado
+                    
+                    // Mostra a peça "FIM" se o espaço vazio estiver na posição 24
+                    var emptyIndex = findEmptySpace();
+                    if (emptyIndex === 24) {
+                        setImagePiece(getImageElement(24), 25);
+                    }
+                    return true;
+                } else {
+                    document.querySelector("h1").innerText = titulo(GAME_STATES.NORMAL);
+                    gameFinished = false; // permite movimento
+                    return false;
+                }
+            }
+        </script>
+        <style type="text/css">
+        </style>
+    </head>
+    <body onload="inic()">
+        <div id="base">
+            <!--input e ações-->
+            <h1 id ="Titulo"></h1>
+            <button id="butt" onclick="show()">finalizar</button>
+            <button id="butt" onclick="randImages()">baralhar e jogar </button>
+            <button id="butt" onclick="ez()">facilitar e jogar</button>
+
+            <!--output-->
+            <div id="cores"></div>
+        </div>
+    </body>
+</html>
