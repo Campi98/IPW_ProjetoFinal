@@ -1,4 +1,4 @@
-Projeto para a cadeira de Introdução à Programação Web (1º ano)
+Projeto para a cadeira de Introdução à Programação Web (1º ano). [English Version](README.en.md)
 
 ## Estrutura do Projeto
 
